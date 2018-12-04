@@ -244,40 +244,39 @@
 							</div>
 						</div>
 					</div>
-					
-					<div id="carouselExampleControls" class="cats margin-lg-b200 carousel slide" data-ride="carousel">
-	  					<div class="carousel-inner">
-	  						<?php foreach($category as $Categories): ?>
-	  						<div class="carousel-item active">
-		  						<a class="cat-box">
-									<div class="cat-icon">
-										<i class="fa fa-film"></i>
-									</div>
-									<h2><?= (is_arabic() ? $Categories->keyword_title : $Categories->cat_keywords_en); ?></h2>
-								</a>
-						    </div>
-						    <?php endforeach ?>
-	  					</div>
-	  				</div>
-					
-						
-					
-					<!-- <div class="cats margin-lg-b200">
-						<?php foreach($category as $Categories): ?>
-						<a class="cat-box">
-							<div class="cat-icon">
-								<i class="fa fa-film"></i>
-							</div>
-							<h2><?= (is_arabic() ? $Categories->keyword_title : $Categories->cat_keywords_en); ?></h2>
-						</a>
-						<?php endforeach ?>
-					</div> -->
 				</div>
 			</div>
 		</div>
 		
 	</div>
 	<main class="mainy">
+
+<!-- TESTIMONIALS -->
+<section class="list-categories-area">
+	<div class="container">
+      <div class="row">
+        <div class="col-sm-12">
+			<div id="list-categories-home" class="owl-carousel">
+				<?php foreach($category as $Categories): ?>
+	            <!--TESTIMONIAL 1 -->
+	            <div class="item">
+	              <div class="shadow-effect">
+	                <img class="img-responsive" src="<?= (!empty($Categories->picutre) ? 'assets/new_uploads/'.$Categories->picutre:'assets/images/logo%20vatrena.png');  ?>" alt="">
+	                <div class="item-details">
+						<a href="<?= base_url() ?>finder/?guide_search_input=<?=(is_arabic() ? $Categories->keyword_title : $Categories->cat_keywords_en)?>"> <?= (is_arabic() ? $Categories->keyword_title : $Categories->cat_keywords_en); ?></a>
+					</div>
+	              </div>
+	            </div>
+	            <!--END OF TESTIMONIAL 1 -->
+			    <?php endforeach ?>
+          </div>
+        </div>
+    </div>
+  </div>
+</section>
+<!-- END OF TESTIMONIALS -->
+
+
 		<div class="container margin_60">
 
 			<!-- <div class="main_title">
@@ -299,7 +298,7 @@
 				<div class="col-md-4">
 					<div class="vatrena-holder">
 						<div class="vatrena-img-holder">
-							<img src="<?= (!empty($vatrena->logo) ? 'assets/new_uploads/'.$vatrena->logo:'assets/images/logo%20vatrena.png');  ?>">
+							<a href="<?= base_url() ?>guide/<?= no_dashes($vatrena->company_name_en); ?>/<?= $vatrena->companies_id ?>"><img src="<?= (!empty($vatrena->logo) ? 'assets/new_uploads/'.$vatrena->logo:'assets/images/logo%20vatrena.png');  ?>"></a>
 						</div>
 						<div class="vatrena-desc-holder">
 							<!-- <img src="https://educationwp.thimpress.com/wp-content/uploads/learn-press-profile/7/9c081444f942cc8fe0ddf55631b584e2.jpg"> -->

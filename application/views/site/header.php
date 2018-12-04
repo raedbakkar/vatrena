@@ -58,12 +58,12 @@
     <?php if(is_arabic()){ ?>
         <link href="assets/css/leto_ar.css" rel="stylesheet">
     <?php } ?>
-        
+        <link href="https://owlcarousel2.github.io/OwlCarousel2/assets/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
     <!--[if lt IE 9]>
       <script src="js/html5shiv.min.js"></script>
       <script src="js/respond.min.js"></script>
     <![endif]-->
-        
+
 </head>
 <body>
 

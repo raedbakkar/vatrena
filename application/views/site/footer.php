@@ -166,16 +166,34 @@ $('input').iCheck({
     <script src="assets/js/tabs.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
     <script>
-        new CBPFWTabs(document.getElementById('tabs'));
+        // new CBPFWTabs(document.getElementById('tabs'));
     </script>
     <script>
-        console.log('s');
         $('.wishlist_close_admin').on('click', function (c) {
             $(this).parent().parent().parent().fadeOut('slow', function (c) {});
         });
 
         var $owl = $('.owl-carousel');
         var $owl_vid = $('.owl-carousel-vid');
+
+        $('#list-categories-home').owlCarousel({
+            rtl: true,
+            loop:true,
+            margin:10,
+            autoplay:true,
+            nav:true,
+            responsive:{
+                0:{
+                    items:1
+                },
+                600:{
+                    items:3
+                },
+                1000:{
+                    items:3
+                }
+            }
+        });
 
         $('.owl-carousel').owlCarousel({
             loop:true,
