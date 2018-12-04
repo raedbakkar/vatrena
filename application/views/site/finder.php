@@ -42,9 +42,9 @@
 								<div class="styled-select-filters">
 									<select name="sort_rating" id="sort_rating">
 										<option value="" selected>التصنيفات</option>
-										<!-- <?php foreach($all_rel_category as $category): ?>
+										<?php foreach($all_rel_category as $category): ?>
 											<option value="<?= $category->keywords_id ?>"><?= $category->keyword_title ?></option>
-										<?php endforeach; ?> -->
+										<?php endforeach; ?>
 									</select>
 								</div>
 							</div>

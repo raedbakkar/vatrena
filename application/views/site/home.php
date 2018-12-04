@@ -24,25 +24,21 @@
 										<div class="col-md-12">
 											<div class="form-group">
 												<label class="laby"><?= lang('v_search_dalil') ?></label>
+												<input type="hidden" name="search_type">
+												<input type="hidden" name="search_type_id">
 												<input type="text" class="form-control controly" value="" name="guide_search_input" autocomplete="off" placeholder="ابحث بأسم الشركة - نوع النشاط - التليفون - العنوان">
 												<div class="recommendation">
-													
 													<h4 class="head-list"><i class="fa fa-search"></i> categories</h4>
-													<ul class="category">
-														
-													</ul>
+													<ul class="category"> </ul>
+
 													<h4 class="head-list"><i class="fa fa-search"></i> keywords</h4>
-													<ul class="keyword">
-														
-													</ul>
+													<ul class="keyword"> </ul>
+													
 													<h4 class="head-list"><i class="fa fa-search"></i> companies</h4>
-													<ul class="related-category">
-														
-													</ul>
+													<ul class="related-category"> </ul>
+													
 													<h4 class="head-list"><i class="fa fa-search"></i> Brands</h4>
-													<ul class="brand">
-														
-													</ul>
+													<ul class="brand"> </ul>
 												</div>
 											</div>
 										</div>

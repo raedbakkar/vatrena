@@ -169,13 +169,7 @@ $('input').iCheck({
         // new CBPFWTabs(document.getElementById('tabs'));
     </script>
     <script>
-        $('.wishlist_close_admin').on('click', function (c) {
-            $(this).parent().parent().parent().fadeOut('slow', function (c) {});
-        });
-
-        var $owl = $('.owl-carousel');
-        var $owl_vid = $('.owl-carousel-vid');
-
+//     raed code
         $('#list-categories-home').owlCarousel({
             rtl: true,
             loop:true,
@@ -194,6 +188,19 @@ $('input').iCheck({
                 }
             }
         });
+
+        $(document).on('click', '.list-search-btn', function () {
+            $('[name=search_type]').val($(this).parent('ul').attr('class'));
+            $('[name=search_type_id]').val($(this).data('id'));
+        })
+
+
+        $('.wishlist_close_admin').on('click', function (c) {
+            $(this).parent().parent().parent().fadeOut('slow', function (c) {});
+        });
+
+        var $owl = $('.owl-carousel');
+        var $owl_vid = $('.owl-carousel-vid');
 
         $('.owl-carousel').owlCarousel({
             loop:true,
@@ -286,6 +293,8 @@ $('input').iCheck({
         //     }
         // });
 
+
+        
     </script>
    
     <script src="assets/js/leto.js"></script>

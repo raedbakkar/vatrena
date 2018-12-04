@@ -167,6 +167,8 @@ class Home extends CI_Controller {
 
 	public function finder(){
 
+		$guide_search_input_type = $this->input->get('search_type');
+		$guide_search_input_type_id = $this->input->get('search_type_id');
 		$guide_search_input = $this->input->get('guide_search_input');
 		$near_me = $this->input->get('near_me');
 		$area = $this->input->get('area');
@@ -182,13 +184,32 @@ class Home extends CI_Controller {
 			$offset = $page * $limit - $limit - 1;
 		}
 
-		// $data['all_rel_category'] = $this->get_relative_category($guide_search_input);
 
 		$data['all_rel_brand'] = $this->get_relative_brand($guide_search_input);
 
 		$data['get_param'] = '&guide_search_input='.$guide_search_input.'&area='.$area.'&moha='.$moha.'&city='.$city.'&district='.$district.'&near_me='.$near_me;
 		// die();
-		$data['search_result'] =  $this->guide_search_input($guide_search_input, $area, $moha, $city, $district, $offset, 20);
+		$data['search_result'] =  $this->guide_search_input($guide_search_input_type, $guide_search_input_type_id, $guide_search_input, $area, $moha, $city, $district, $offset, 20);
+
+		switch ($guide_search_input_type) {
+			case 'category':
+				$data['all_rel_category'] = $this->get_related_category($guide_search_input_type_id);
+				
+				break;
+			
+			case 'keyword':
+
+				break;
+				
+			case 'brand':
+
+				break;
+			
+			default:
+
+				break;
+		}
+		
 		
 		// $data['count_all_results'] = $this->count_all_result_search($guide_search_input, $area, $moha, $city, $district, $offset, 20);	
 		
@@ -204,58 +225,85 @@ class Home extends CI_Controller {
 		// 	$data['last_apperd_number'] = $data['count_pages'];
 
 		// }
-
-		
 		$this->load->view('site/header');
 		$this->load->view('site/finder', $data);
 		$this->load->view('site/footer');
 
 	}
 
-	public function guide_search_input($guide_search_input , $area, $moha, $city, $district, $offset, $limit){
+	public function guide_search_input($guide_search_input_type, $guide_search_input_type_id, $guide_search_input, $area, $moha, $city, $district, $offset, $limit){
 
-		$category_search_id = $this->db->where('is_category', 1)->where('keyword_title', $guide_search_input)->or_where('cat_keywords_en', $guide_search_input)->get('cat_keywords')->row('keywords_id');
+		switch ($guide_search_input_type) {
+			case 'category':
+				$this->db
+					->join('vatrena_keys_category', 'companies.companies_id = vatrena_keys_category.vatrena_id', 'left')
+					->where('vatrena_keys_category.category_id', $guide_search_input_type_id)
+					->where('vatrena_keys_category.priority !=','')
+					->order_by('vatrena_keys_category.priority', 'ASC')
+					;
 
+				break;
+			
+			case 'keyword':
+				$this->db
+					->join('vatrena_keys_keyword', 'companies.companies_id = vatrena_keys_keyword.vatrena_id', 'left')
+					->where('vatrena_keys_keyword.keyword_id', $guide_search_input_type_id)
+					->where('vatrena_keys_keyword.priority !=','')
+					->order_by('vatrena_keys_keyword.priority', 'ASC')
+					;
 
-		$vatrena = $this->db->like('company_name_en', $guide_search_input)->or_like('company_name_ar', $guide_search_input)->get('companies')->result();
+				break;
+				
+			case 'brand':
+				$this->db
+					->join('related_brand_vatrena', 'companies.companies_id = related_brand_vatrena.company_id', 'left')
+					->where('related_brand_vatrena.brand_id', $guide_search_input_type_id)
+					->where('related_brand_vatrena.priority !=','')
+					;
 
+				break;
+			
+			default:
+				$this->db
+					->like('company_name_en', $guide_search_input)
+					->or_like('company_name_ar', $guide_search_input)
+					;
 
-		if($vatrena){
-			return $vatrena;
+				break;
 		}
+		
+		if($area)
+			$this->db->where('area', $area);
+		if($moha)
+			$this->db->where('mohafaza', $moha);
+		if($city)
+			$this->db->where('city', $city);
+		if($district)
+			$this->db->where('district', $district);
+
+		$companies=$this->db
+				->where('companies.active', 1)
+				->get('companies')->result();
 
 
-		if($category_search_id){
-			$relative_vatrena = $this->db->where('category_id', $category_search_id)->where('priority !=','')->order_by('priority','ASC')->get('vatrena_keys_category')->result();
-			$relative_vatrena_not_priority = $this->db->where('category_id', $category_search_id)->where('priority',0)->get('vatrena_keys_category')->result();
-
-			$vatrena_by_priority = array();
-			foreach($relative_vatrena as $vatrena){
-				array_push($vatrena_by_priority, $vatrena->vatrena_id);
-			}
-			// note
-			return $this->db->where('vatrena_keys_category.category_id', $category_search_id)->where('companies.active', 1)->join('companies', 'companies.companies_id = vatrena_keys_category.vatrena_id')->order_by('vatrena_keys_category.priority', 'ASC')->get('vatrena_keys_category')->result();
-
-		}
-
-		// trying searching by keywords
-		$keyword_search_id = $this->db->where('is_category', 0)->where('keyword_title', $guide_search_input)->or_where('cat_keywords_en', $guide_search_input)->get('cat_keywords')->row('keywords_id');
-
-		// if category id exist
-		if($keyword_search_id){
-			return $this->db->where('vatrena_keys_keyword.keyword_id', $keyword_search_id)->where('companies.active', 1)->join('companies', 'companies.companies_id = vatrena_keys_keyword.vatrena_id')->order_by('vatrena_keys_keyword.priority', 'ASC')->get('vatrena_keys_keyword')->result();			
-		}
-
-
-		// trying searching by keywords
-		$brand_search_id = $this->db->where('brand_title', $guide_search_input)->or_where('brand_title_ar', $guide_search_input)->get('brand')->row('brand_id');
-
-		// if brand id exist
-		if($brand_search_id){
-			return $this->db->where('related_brand_vatrena.brand_id', $brand_search_id)->where('companies.active', 1)->join('companies', 'companies.companies_id = related_brand_vatrena.company_id')->order_by('related_brand_vatrena.priority', 'ASC')->get('related_brand_vatrena')->result();			
-		}
-
+		return $companies;
 	}
+
+
+	public function get_related_category($guide_search_input_type_id){
+
+		$this->db
+			->join('categories_related', 'cat_keywords.keywords_id = categories_related.cat_child_id', 'left')
+			->where('categories_related.cat_dad_id', $guide_search_input_type_id)
+			;
+		
+		$categories=$this->db
+			->get('cat_keywords')->result();
+
+		return $categories;
+	}
+
+
 
 	// public function get_relative_category($guide_search_input){
 
@@ -637,7 +685,7 @@ class Home extends CI_Controller {
 
 
 
-		die();
+		// die();
 
 		if($guide_search_input != null){
 
@@ -1477,20 +1525,19 @@ class Home extends CI_Controller {
    		$brand_template = '';
 
    		foreach($categories as $category){
-   			$category_template .= '<li class="list-search-btn">'.(is_arabic() ? $category->keyword_title:$category->cat_keywords_en).'</li>';
+   			$category_template .= '<li data-id="'.$category->keywords_id.'" class="list-search-btn">'.(is_arabic() ? $category->keyword_title:$category->cat_keywords_en).'</li>';
    		}
 
-
    		foreach($keyword as $keywords){
-   			$keyword_template .= '<li class="list-search-btn">'.(is_arabic() ?  $keywords->keyword_title:$keywords->cat_keywords_en).'</li>';
+   			$keyword_template .= '<li data-id="'.$keywords->keywords_id.'" class="list-search-btn">'.(is_arabic() ?  $keywords->keyword_title:$keywords->cat_keywords_en).'</li>';
    		}
 
    		foreach($company as $comp){
-   			$company_template .= '<li class="list-search-btn">'.(is_arabic() ? $comp->company_name_ar:$comp->company_name_en).'</li>';
+   			$company_template .= '<li data-id="'.$comp->companies_id.'" class="list-search-btn">'.(is_arabic() ? $comp->company_name_ar:$comp->company_name_en).'</li>';
    		}
 
    		foreach($brands as $brand){
-   			$brand_template .= '<li class="list-search-btn">'.(is_arabic() ? $brand->brand_title_ar:$brand->brand_title).'</li>';
+   			$brand_template .= '<li data-id="'.$brand->brand_id.'" class="list-search-btn">'.(is_arabic() ? $brand->brand_title_ar:$brand->brand_title).'</li>';
    		}
 
 
