@@ -42,8 +42,10 @@
 								<div class="styled-select-filters">
 									<select name="sort_rating" id="sort_rating">
 										<option value="" selected>التصنيفات</option>
-										<?php foreach($all_rel_category as $category): ?>
-											<option value="<?= $category->keywords_id ?>"><?= $category->keyword_title ?></option>
+										<?php foreach($all_rel_categories as $category): ?>
+											<option value="<?= $category->keywords_id ?>">
+												<?=(is_arabic() ? $category->keyword_title:$category->cat_keywords_en)?>
+											</option>
 										<?php endforeach; ?>
 									</select>
 								</div>
@@ -52,6 +54,11 @@
 								<div class="styled-select-filters">
 									<select name="sort_rating" id="sort_rating">
 										<option value="" selected>المركات</option>
+										<?php foreach($all_rel_brands as $brand): ?>
+											<option value="<?= $brand->brand_id ?>">
+												<?=(is_arabic() ? $brand->brand_title_ar:$brand->brand_title)?>
+											</option>
+										<?php endforeach; ?>
 									</select>
 								</div>
 							</div>
@@ -59,6 +66,11 @@
 								<div class="styled-select-filters">
 									<select name="sort_rating" id="sort_rating">
 										<option value="" selected>الاماكن</option>
+										<?php foreach($all_rel_cities as $city): ?>
+											<option value="<?= $city->city_id ?>">
+												<?=(is_arabic() ? $city->city_name_ar:$city->city_name)?>
+											</option>
+										<?php endforeach; ?>
 									</select>
 								</div>
 							</div>

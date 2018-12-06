@@ -275,16 +275,6 @@
 
 		<div class="container margin_60">
 
-			<!-- <div class="main_title">
-				<h2>Featured<span> Category</span></h2>
-			</div> -->
-
-			<div class="row">
-				<div>
-					
-				</div>
-			</div>
-
 			<div class="main_title">
 				<h2>Top<span> Vatrena</span></h2>
 			</div>

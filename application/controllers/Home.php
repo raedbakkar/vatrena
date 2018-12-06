@@ -5,9 +5,9 @@ class Home extends CI_Controller {
 
 
 	public function index(){
-		$data['category'] = $this->db->where('featured_item', 1)->where('is_category', 1)->limit(4)->get('cat_keywords')->result();
+		$data['category'] = $this->db->where('featured_item', 1)->where('is_category', 1)->get('cat_keywords')->result();
 		$data['area'] = $this->db->get('governorate')->result();
-		$data['vatrenas'] = $this->db->where('featured_item', 1)->where('parent', 0)->limit(9)->get('companies')->result();
+		$data['vatrenas'] = $this->db->where('featured_item', 1)->where('companies.active', 1)->where('parent', 0)->limit(9)->get('companies')->result();
 		$this->load->view('site/header');
 		$this->load->view('site/home', $data);
 		$this->load->view('site/footer');
@@ -185,7 +185,7 @@ class Home extends CI_Controller {
 		}
 
 
-		$data['all_rel_brand'] = $this->get_relative_brand($guide_search_input);
+		// $data['all_rel_brand'] = $this->get_relative_brand($guide_search_input);
 
 		$data['get_param'] = '&guide_search_input='.$guide_search_input.'&area='.$area.'&moha='.$moha.'&city='.$city.'&district='.$district.'&near_me='.$near_me;
 		// die();
@@ -193,27 +193,43 @@ class Home extends CI_Controller {
 
 		switch ($guide_search_input_type) {
 			case 'category':
-				$data['all_rel_category'] = $this->get_related_category($guide_search_input_type_id);
-				
+				$data['all_rel_categories'] = $this->get_related_category_by_category($guide_search_input_type_id);
+				$data['all_rel_brands'] = $this->get_related_category_by_brand($guide_search_input_type_id);
+				$data['all_rel_cities'] = $this->get_related_category_by_city($guide_search_input_type_id);
+
 				break;
 			
 			case 'keyword':
+				$data['all_rel_categories'] = $this->get_related_keyword_by_category($guide_search_input_type_id);
+				$data['all_rel_brands'] = $this->get_related_keyword_by_brand($guide_search_input_type_id);
+				$data['all_rel_cities'] = $this->get_related_keyword_by_city($guide_search_input_type_id);
 
 				break;
 				
 			case 'brand':
+				$data['all_rel_categories'] = $this->get_related_brand_by_category($guide_search_input_type_id);
+				$data['all_rel_brands'] = $this->get_related_brand_by_brand($guide_search_input_type_id);
+				$data['all_rel_cities'] = $this->get_related_brand_by_city($guide_search_input_type_id);
 
 				break;
-			
+
 			default:
+				$search_result_ids =  $this->guide_search_input($guide_search_input_type, $guide_search_input_type_id, $guide_search_input, $area, $moha, $city, $district, $offset, 0, true);
+
+				$companies_ids=array();
+				if($search_result_ids)
+					foreach ($search_result_ids as $comp) {
+						$companies_ids[]=$comp->companies_id;
+					}
+
+				$data['all_rel_categories'] = $this->get_related_company_by_category($companies_ids);
+				$data['all_rel_brands'] = $this->get_related_company_by_brand($companies_ids);
+				$data['all_rel_cities'] = $this->get_related_company_by_city($companies_ids);
 
 				break;
 		}
 		
-		
-		// $data['count_all_results'] = $this->count_all_result_search($guide_search_input, $area, $moha, $city, $district, $offset, 20);	
-		
-		
+
 
 		// $data['count_pages'] = round($data['count_all_results'] / 20);
 
@@ -231,12 +247,12 @@ class Home extends CI_Controller {
 
 	}
 
-	public function guide_search_input($guide_search_input_type, $guide_search_input_type_id, $guide_search_input, $area, $moha, $city, $district, $offset, $limit){
+	public function guide_search_input($guide_search_input_type, $guide_search_input_type_id, $guide_search_input, $area, $moha, $city, $district, $offset, $limit, $ids=false){
 
 		switch ($guide_search_input_type) {
 			case 'category':
 				$this->db
-					->join('vatrena_keys_category', 'companies.companies_id = vatrena_keys_category.vatrena_id', 'left')
+					->join('vatrena_keys_category', 'companies.companies_id = vatrena_keys_category.vatrena_id')
 					->where('vatrena_keys_category.category_id', $guide_search_input_type_id)
 					->where('vatrena_keys_category.priority !=','')
 					->order_by('vatrena_keys_category.priority', 'ASC')
@@ -246,7 +262,7 @@ class Home extends CI_Controller {
 			
 			case 'keyword':
 				$this->db
-					->join('vatrena_keys_keyword', 'companies.companies_id = vatrena_keys_keyword.vatrena_id', 'left')
+					->join('vatrena_keys_keyword', 'companies.companies_id = vatrena_keys_keyword.vatrena_id')
 					->where('vatrena_keys_keyword.keyword_id', $guide_search_input_type_id)
 					->where('vatrena_keys_keyword.priority !=','')
 					->order_by('vatrena_keys_keyword.priority', 'ASC')
@@ -256,7 +272,7 @@ class Home extends CI_Controller {
 				
 			case 'brand':
 				$this->db
-					->join('related_brand_vatrena', 'companies.companies_id = related_brand_vatrena.company_id', 'left')
+					->join('related_brand_vatrena', 'companies.companies_id = related_brand_vatrena.company_id')
 					->where('related_brand_vatrena.brand_id', $guide_search_input_type_id)
 					->where('related_brand_vatrena.priority !=','')
 					;
@@ -281,6 +297,11 @@ class Home extends CI_Controller {
 		if($district)
 			$this->db->where('district', $district);
 
+		if($ids){
+			$this->db->select('companies.companies_id');
+		}else{
+			// limit offset pagination
+		}
 		$companies=$this->db
 				->where('companies.active', 1)
 				->get('companies')->result();
@@ -289,12 +310,12 @@ class Home extends CI_Controller {
 		return $companies;
 	}
 
-
-	public function get_related_category($guide_search_input_type_id){
+// ----------category-----------
+	public function get_related_category_by_category($category_id){
 
 		$this->db
-			->join('categories_related', 'cat_keywords.keywords_id = categories_related.cat_child_id', 'left')
-			->where('categories_related.cat_dad_id', $guide_search_input_type_id)
+			->join('categories_related', 'cat_keywords.keywords_id = categories_related.cat_child_id')
+			->where('categories_related.cat_dad_id', $category_id)
 			;
 		
 		$categories=$this->db
@@ -303,6 +324,168 @@ class Home extends CI_Controller {
 		return $categories;
 	}
 
+	public function get_related_category_by_brand($category_id){
+
+		$this->db
+			->join('brand_keys_category', 'brand.brand_id = brand_keys_category.brand_id')
+			->where('brand_keys_category.keyword_id', $category_id)
+			;
+		
+		$brands=$this->db
+			->get('brand')->result();
+
+		return $brands;
+	}
+
+	public function get_related_category_by_city($category_id){
+
+		$this->db
+			->select(array('city.city_id','city.city_name','city.city_name_ar'))
+			->join('companies', 'companies.city = city.city_id')
+			->join('vatrena_keys_category', 'companies.companies_id = vatrena_keys_category.vatrena_id')
+			->where('vatrena_keys_category.category_id', $category_id)
+			->where('vatrena_keys_category.priority !=','')
+			->where('companies.active', 1)
+			->order_by('vatrena_keys_category.priority', 'ASC')
+			->group_by('companies.city')
+			;
+		
+		$cities=$this->db
+			->get('city')->result();
+
+		return $cities;
+	}
+// ----------keyword----------
+	public function get_related_keyword_by_category($keyword_id){
+
+		$this->db
+			->join('related_keyword_category', 'cat_keywords.keywords_id = related_keyword_category.category_id')
+			->where('related_keyword_category.keyword_id', $keyword_id)
+			;
+		
+		$categories=$this->db
+			->get('cat_keywords')->result();
+
+		return $categories;
+	}
+
+	public function get_related_keyword_by_brand($keyword_id){
+
+		$this->db
+			->join('keyword_brand_related', 'brand.brand_id = keyword_brand_related.related_brand_id')
+			->where('keyword_brand_related.related_keyword_id', $keyword_id)
+			;
+		
+		$brands=$this->db
+			->get('brand')->result();
+
+		return $brands;
+	}
+
+	public function get_related_keyword_by_city($keyword_id){
+
+		$this->db
+			->select(array('city.city_id','city.city_name','city.city_name_ar'))
+			->join('companies', 'companies.city = city.city_id')
+			->join('vatrena_keys_keyword', 'companies.companies_id = vatrena_keys_keyword.vatrena_id')
+			->where('vatrena_keys_keyword.keyword_id', $keyword_id)
+			->where('vatrena_keys_keyword.priority !=','')
+			->where('companies.active', 1)
+			->order_by('vatrena_keys_keyword.priority', 'ASC')
+			->group_by('companies.city')
+			;
+		
+		$cities=$this->db
+			->get('city')->result();
+
+		return $cities;
+	}
+// ----------brand----------
+	public function get_related_brand_by_category($brand_id){
+
+		$this->db
+			->join('brand_keys_category', 'cat_keywords.keywords_id = brand_keys_category.keyword_id')
+			->where('brand_keys_category.brand_id', $brand_id)
+			;
+		
+		$categories=$this->db
+			->get('cat_keywords')->result();
+
+		return $categories;
+	}
+
+	public function get_related_brand_by_brand($brand_id){
+
+		return array();
+	}
+
+	public function get_related_brand_by_city($brand_id){
+
+		$this->db
+			->select(array('city.city_id','city.city_name','city.city_name_ar'))
+			->join('companies', 'companies.city = city.city_id')
+			->join('related_brand_vatrena', 'companies.companies_id = related_brand_vatrena.company_id')
+			->where('related_brand_vatrena.brand_id', $brand_id)
+			->where('related_brand_vatrena.priority !=','')
+			->where('companies.active', 1)
+			->order_by('related_brand_vatrena.priority', 'ASC')
+			->group_by('companies.city')
+			;
+		
+		$cities=$this->db
+			->get('city')->result();
+
+		return $cities;
+	}
+// ----------brand----------
+	public function get_related_company_by_category($companies_ids){
+		if(! $companies_ids)
+			return array();
+
+		$this->db
+			->join('vatrena_keys_category', 'cat_keywords.keywords_id = vatrena_keys_category.category_id')
+			->where_in('vatrena_keys_category.vatrena_id', $companies_ids)
+			;
+		
+		$categories=$this->db
+			->get('cat_keywords')->result();
+
+		return $categories;
+	}
+
+	public function get_related_company_by_brand($companies_ids){
+		if(! $companies_ids)
+			return array();
+
+		$this->db
+			->join('related_brand_vatrena', 'brand.brand_id = related_brand_vatrena.brand_id')
+			->where_in('related_brand_vatrena.company_id', $companies_ids)
+			;
+		
+		$brands=$this->db
+			->get('brand')->result();
+
+		return $brands;
+	}
+
+	public function get_related_company_by_city($companies_ids){
+		if(! $companies_ids)
+			return array();
+
+		$this->db
+			->select(array('city.city_id','city.city_name','city.city_name_ar'))
+			->join('companies', 'companies.city = city.city_id')
+			->where_in('companies.companies_id', $companies_ids)
+			->where('companies.active', 1)
+			->group_by('companies.city')
+			;
+		
+		$cities=$this->db
+			->get('city')->result();
+
+		return $cities;
+	}
+// --------------------
 
 
 	// public function get_relative_category($guide_search_input){
