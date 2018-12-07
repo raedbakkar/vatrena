@@ -40,7 +40,7 @@
 						<div class="row">
 							<div class="col-md-4 col-sm-4 col-xs-4">
 								<div class="styled-select-filters">
-									<select name="sort_rating" id="sort_rating">
+									<select name="finder_category" id="sort_rating">
 										<option value="" selected>التصنيفات</option>
 										<?php foreach($all_rel_categories as $category): ?>
 											<option value="<?= $category->keywords_id ?>">
@@ -52,7 +52,7 @@
 							</div>
 							<div class="col-md-4 col-sm-4 col-xs-4">
 								<div class="styled-select-filters">
-									<select name="sort_rating" id="sort_rating">
+									<select name="finder_brand" id="sort_rating">
 										<option value="" selected>المركات</option>
 										<?php foreach($all_rel_brands as $brand): ?>
 											<option value="<?= $brand->brand_id ?>">
@@ -64,10 +64,12 @@
 							</div>
 							<div class="col-md-4 col-sm-4 col-xs-4">
 								<div class="styled-select-filters">
-									<select name="sort_rating" id="sort_rating">
-										<option value="" selected>الاماكن</option>
+									<select name="finder_city" id="sort_rating">
+										<option value="">الاماكن</option>
 										<?php foreach($all_rel_cities as $city): ?>
-											<option value="<?= $city->city_id ?>">
+											<option value="<?= $city->city_id ?>"
+											<?=($this->input->get('city') == $city->city_id)?'selected':''?>
+											>
 												<?=(is_arabic() ? $city->city_name_ar:$city->city_name)?>
 											</option>
 										<?php endforeach; ?>
@@ -143,21 +145,9 @@
 					
 
 					<hr>
-
-					<!-- <div class="text-center">
-						<ul class="pagination">
-							<li><a href="<?= base_url() ?>finder?page=<?= $current_page == 1 ? 1: $current_page - 1 ?><?= $get_param ?>">Prev</a>
-							</li>
-							<?php for($i=$first_appered_number;$i<=$last_apperd_number;$i++){ ?>
-							<li><a href="<?= base_url() ?>finder?page=<?=$i?><?= $get_param ?>"><?= $i ?></a>
-							</li>
-							<?php } ?>
-							<li><a href="<?= base_url() ?>finder?page=<?= $current_page == $last_apperd_number ? $last_apperd_number : $current_page + 1 ?><?= $get_param ?>">Next</a>
-							</li>
-						</ul>
-					</div> -->
-					<!-- end pagination-->
-
+					<div class="text-center">
+					<?php echo $this->pagination->create_links(); ?>
+					</div>
 				</div>
 				<!-- End col lg-9 -->
 

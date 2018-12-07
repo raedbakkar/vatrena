@@ -175,21 +175,15 @@ class Home extends CI_Controller {
 		$moha = $this->input->get('moha');
 		$city = $this->input->get('city');
 		$district = $this->input->get('district');
-		$page = $this->input->get('page');
-		$data['current_page'] = $page;
+
 		$limit = 20;
-		if($page == 1){
-		 	$offset = 0;
-		}else{
-			$offset = $page * $limit - $limit - 1;
-		}
+		$offset = ($this->input->get('per_page')) ? $this->input->get('per_page') : 0;
+		if($offset)
+			$offset = $offset * $limit - $limit - 1;
 
-
-		// $data['all_rel_brand'] = $this->get_relative_brand($guide_search_input);
+		$data['current_page'] = $offset;
 
 		$data['get_param'] = '&guide_search_input='.$guide_search_input.'&area='.$area.'&moha='.$moha.'&city='.$city.'&district='.$district.'&near_me='.$near_me;
-		// die();
-		$data['search_result'] =  $this->guide_search_input($guide_search_input_type, $guide_search_input_type_id, $guide_search_input, $area, $moha, $city, $district, $offset, 20);
 
 		switch ($guide_search_input_type) {
 			case 'category':
@@ -214,7 +208,7 @@ class Home extends CI_Controller {
 				break;
 
 			default:
-				$search_result_ids =  $this->guide_search_input($guide_search_input_type, $guide_search_input_type_id, $guide_search_input, $area, $moha, $city, $district, $offset, 0, true);
+				$search_result_ids =  $this->guide_search_input($guide_search_input_type, $guide_search_input_type_id, $guide_search_input, $area, $moha, $city, $district, $offset, false, true);
 
 				$companies_ids=array();
 				if($search_result_ids)
@@ -229,18 +223,8 @@ class Home extends CI_Controller {
 				break;
 		}
 		
+		$data['search_result'] =  $this->guide_search_input($guide_search_input_type, $guide_search_input_type_id, $guide_search_input, $area, $moha, $city, $district, $offset, $limit);
 
-
-		// $data['count_pages'] = round($data['count_all_results'] / 20);
-
-		// if($data['count_pages'] > 8){
-		// 	$data['first_appered_number'] = $data['count_pages'] - 4;
-		// 	$data['last_apperd_number'] = $data['count_pages'] + 4;
-		// }else{
-		// 	$data['first_appered_number'] = 1;
-		// 	$data['last_apperd_number'] = $data['count_pages'];
-
-		// }
 		$this->load->view('site/header');
 		$this->load->view('site/finder', $data);
 		$this->load->view('site/footer');
@@ -249,10 +233,11 @@ class Home extends CI_Controller {
 
 	public function guide_search_input($guide_search_input_type, $guide_search_input_type_id, $guide_search_input, $area, $moha, $city, $district, $offset, $limit, $ids=false){
 
+		$this->db->start_cache();
 		switch ($guide_search_input_type) {
 			case 'category':
 				$this->db
-					->join('vatrena_keys_category', 'companies.companies_id = vatrena_keys_category.vatrena_id')
+					->join('vatrena_keys_category', 'vatrena_keys_category.vatrena_id = companies.companies_id')
 					->where('vatrena_keys_category.category_id', $guide_search_input_type_id)
 					->where('vatrena_keys_category.priority !=','')
 					->order_by('vatrena_keys_category.priority', 'ASC')
@@ -262,7 +247,7 @@ class Home extends CI_Controller {
 			
 			case 'keyword':
 				$this->db
-					->join('vatrena_keys_keyword', 'companies.companies_id = vatrena_keys_keyword.vatrena_id')
+					->join('vatrena_keys_keyword', 'vatrena_keys_keyword.vatrena_id = companies.companies_id')
 					->where('vatrena_keys_keyword.keyword_id', $guide_search_input_type_id)
 					->where('vatrena_keys_keyword.priority !=','')
 					->order_by('vatrena_keys_keyword.priority', 'ASC')
@@ -272,7 +257,7 @@ class Home extends CI_Controller {
 				
 			case 'brand':
 				$this->db
-					->join('related_brand_vatrena', 'companies.companies_id = related_brand_vatrena.company_id')
+					->join('related_brand_vatrena', 'related_brand_vatrena.company_id = companies.companies_id')
 					->where('related_brand_vatrena.brand_id', $guide_search_input_type_id)
 					->where('related_brand_vatrena.priority !=','')
 					;
@@ -297,15 +282,30 @@ class Home extends CI_Controller {
 		if($district)
 			$this->db->where('district', $district);
 
+		$this->db->where('companies.active', 1);
+		$this->db->stop_cache();
+		
 		if($ids){
 			$this->db->select('companies.companies_id');
 		}else{
-			// limit offset pagination
-		}
-		$companies=$this->db
-				->where('companies.active', 1)
-				->get('companies')->result();
+		    $count_rows = $this->db->count_all_results('companies');
 
+	        $config['base_url'] = base_url('finder');
+	        $config['total_rows'] = $count_rows;
+	        $config['per_page'] = $limit;
+
+	        $this->load->library('pagination');
+	        $this->pagination->initialize($config);
+
+
+		    // < limit >
+		    if($limit)
+		        $this->db->limit($limit, $offset);
+		    // < / limit >
+		}
+
+		$companies= $this->db->get('companies')->result();
+		$this->db->flush_cache();
 
 		return $companies;
 	}

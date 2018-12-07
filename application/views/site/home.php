@@ -20,7 +20,6 @@
 								<h3></h3>
 								<form method="GET" action="<?= base_url() ?>finder">
 									<div class="row">
-										<input type="hidden"  name="page" value="1">
 										<div class="col-md-12">
 											<div class="form-group">
 												<label class="laby"><?= lang('v_search_dalil') ?></label>

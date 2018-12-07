@@ -194,7 +194,40 @@ $('input').iCheck({
             $('[name=search_type_id]').val($(this).data('id'));
         })
 
+        function reuse_query_string(parameters) {
+            var urlParams = new URLSearchParams(window.location.search);
+            $.each(parameters, function (parameter, value) {
+                urlParams.delete(parameter);
+                urlParams.append(parameter, value);
+            })
+            urlParams.delete('per_page');
 
+            return urlParams.toString();
+        }
+
+        $('[name=finder_category]').on('change', function () {
+            window.location.href=
+                window.location.origin+
+                window.location.pathname+
+                '?'+reuse_query_string({'search_type':'category', 'search_type_id':$(this).val()});
+        })
+        $('[name=finder_brand]').on('change', function () {
+            window.location.href=
+                window.location.origin+
+                window.location.pathname+
+                '?'+reuse_query_string({'search_type':'brand', 'search_type_id':$(this).val()});
+        })
+
+        $('[name=finder_city]').on('change', function () {
+            window.location.href=
+                window.location.origin+
+                window.location.pathname+
+                '?'+reuse_query_string({'city':$(this).val()});
+        })
+
+
+
+        // -------------------------
         $('.wishlist_close_admin').on('click', function (c) {
             $(this).parent().parent().parent().fadeOut('slow', function (c) {});
         });
