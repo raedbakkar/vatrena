@@ -165,6 +165,15 @@ class Home extends CI_Controller {
 
 	}
 
+	public function get_companies_by_location($lat, $lng)
+	{
+	    $radius=5;
+
+	    $select=sprintf("( 3959 * acos( cos( radians('%s') ) * cos( radians( companies.lat ) ) * cos( radians( companies.lng ) - radians('%s') ) + sin( radians('%s') ) * sin( radians( companies.lat ) ) ) ) AS distance", $lat, $lng, $lat);
+	    $this->db->select($select, false);
+	    $this->db->having('distance <', $radius);
+	}
+
 	public function finder(){
 
 		$guide_search_input_type = $this->input->get('search_type');
@@ -178,8 +187,8 @@ class Home extends CI_Controller {
 
 		$limit = 20;
 		$offset = ($this->input->get('per_page')) ? $this->input->get('per_page') : 0;
-		if($offset)
-			$offset = $offset * $limit - $limit - 1;
+		// if($offset)
+			// $offset = $offset * $limit - $limit - 1;
 
 		$data['current_page'] = $offset;
 
@@ -282,13 +291,17 @@ class Home extends CI_Controller {
 		if($district)
 			$this->db->where('district', $district);
 
+		if($this->input->get('lat') && $this->input->get('lng'))
+			$this->get_companies_by_location($this->input->get('lat'), $this->input->get('lng'));
+
 		$this->db->where('companies.active', 1);
 		$this->db->stop_cache();
 		
 		if($ids){
 			$this->db->select('companies.companies_id');
 		}else{
-		    $count_rows = $this->db->count_all_results('companies');
+		    // $count_rows = 10;
+		    $count_rows = $this->db->get('companies')->num_rows();
 
 	        $config['base_url'] = base_url('finder');
 	        $config['total_rows'] = $count_rows;
@@ -302,6 +315,10 @@ class Home extends CI_Controller {
 		    if($limit)
 		        $this->db->limit($limit, $offset);
 		    // < / limit >
+
+		    $this->db->select(array(
+'companies_id','company_name_ar','company_name_en','logo','companyType','area','mohafaza','city','district','lat','lng','adress_ar','adress_en','email','password','company_about','employee_name','employee_job','employee_phone','company_mobile','company_telephone','company_about_en','website','featured_item','facebook','twitter','google_plus','linkedin','instagram','video','starting_hour','ending_hour','starting_hour_night','ending_hour_night','holidays','count_views','active','parent','user_id','bannar'));
+
 		}
 
 		$companies= $this->db->get('companies')->result();

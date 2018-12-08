@@ -18,11 +18,13 @@
 						<div class="tab-content">
 							<div class="tab-pane active" id="tours">
 								<h3></h3>
-								<form method="GET" action="<?= base_url() ?>finder">
+								<form id="form-search-finder" method="GET" action="<?= base_url() ?>finder">
 									<div class="row">
 										<div class="col-md-12">
 											<div class="form-group">
 												<label class="laby"><?= lang('v_search_dalil') ?></label>
+												<input type="hidden" name="lat">
+												<input type="hidden" name="lng">
 												<input type="hidden" name="search_type">
 												<input type="hidden" name="search_type_id">
 												<input type="text" class="form-control controly" value="" name="guide_search_input" autocomplete="off" placeholder="ابحث بأسم الشركة - نوع النشاط - التليفون - العنوان">
@@ -83,7 +85,7 @@
 									<hr>
 									<input type="hidden" value="" name="near_me">
 									<button type="submit" class="btn_1 green"><i class="icon-search"></i>Search now</button>
-									<button  class="btn_1 green"><i class="icon-location"></i>بالقرب مني</button>
+									<button class="btn_1 green" onclick="get_nearest_location(); return false;"><i class="icon-location"></i>بالقرب مني</button>
 								</form>
 							</div>
 							<!-- End rab -->

@@ -154,7 +154,7 @@ $('input').iCheck({
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tagsinput/0.8.0/bootstrap-tagsinput.min.js.map"></script>
     <script type="text/javascript" src="https://twitter.github.io/typeahead.js/releases/latest/typeahead.bundle.js"></script>
     <!-- Map -->
-    <script src="http://maps.googleapis.com/maps/api/js"></script>
+    <script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyDwNBXmHBDQ29JWsRH8gwNVkf7mM0-flaI"></script>
                                    
     <script type="text/javascript">var base_url = '<?= base_url() ?>';</script>                             
     <script src="assets/js/map.js"></script>
@@ -170,72 +170,112 @@ $('input').iCheck({
     </script>
     <script>
 //     raed code
-        $('#list-categories-home').owlCarousel({
-            rtl: true,
-            loop:true,
-            margin:10,
-            autoplay:true,
-            nav:true,
-            responsive:{
-                0:{
-                    items:1
-                },
-                600:{
-                    items:3
-                },
-                1000:{
-                    items:3
-                }
+    $('#list-categories-home').owlCarousel({
+        rtl: true,
+        loop:true,
+        margin:10,
+        autoplay:true,
+        nav:true,
+        responsive:{
+            0:{
+                items:1
+            },
+            600:{
+                items:3
+            },
+            1000:{
+                items:3
             }
-        });
+        }
+    });
 
-        $(document).on('click', '.list-search-btn', function () {
-            $('[name=search_type]').val($(this).parent('ul').attr('class'));
-            $('[name=search_type_id]').val($(this).data('id'));
+    $(document).on('click', '.list-search-btn', function () {
+        $('[name=search_type]').val($(this).parent('ul').attr('class'));
+        $('[name=search_type_id]').val($(this).data('id'));
+    })
+
+    function reuse_query_string(parameters) {
+        var urlParams = new URLSearchParams(window.location.search);
+        $.each(parameters, function (parameter, value) {
+            urlParams.delete(parameter);
+            urlParams.append(parameter, value);
         })
+        urlParams.delete('per_page');
 
-        function reuse_query_string(parameters) {
-            var urlParams = new URLSearchParams(window.location.search);
-            $.each(parameters, function (parameter, value) {
-                urlParams.delete(parameter);
-                urlParams.append(parameter, value);
-            })
-            urlParams.delete('per_page');
+        return urlParams.toString();
+    }
 
-            return urlParams.toString();
+    $('[name=finder_category]').on('change', function () {
+        window.location.href=
+            window.location.origin+
+            window.location.pathname+
+            '?'+reuse_query_string({'search_type':'category', 'search_type_id':$(this).val()});
+    })
+    $('[name=finder_brand]').on('change', function () {
+        window.location.href=
+            window.location.origin+
+            window.location.pathname+
+            '?'+reuse_query_string({'search_type':'brand', 'search_type_id':$(this).val()});
+    })
+
+    $('[name=finder_city]').on('change', function () {
+        window.location.href=
+            window.location.origin+
+            window.location.pathname+
+            '?'+reuse_query_string({'city':$(this).val()});
+    })
+
+
+// ----------------------------
+    function get_nearest_location() {        
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(successFunction, errorFunction);
+        } 
+        //Get the latitude and the longitude;
+        function successFunction(position) {
+            $('[name=lat]').val(position.coords.latitude);
+            $('[name=lng]').val(position.coords.longitude);
+            $('form#form-search-finder').submit();            
         }
 
-        $('[name=finder_category]').on('change', function () {
-            window.location.href=
-                window.location.origin+
-                window.location.pathname+
-                '?'+reuse_query_string({'search_type':'category', 'search_type_id':$(this).val()});
-        })
-        $('[name=finder_brand]').on('change', function () {
-            window.location.href=
-                window.location.origin+
-                window.location.pathname+
-                '?'+reuse_query_string({'search_type':'brand', 'search_type_id':$(this).val()});
-        })
+        function errorFunction(){
+            alert("Geocoder failed");
+        }
+        return false;
+    }
 
-        $('[name=finder_city]').on('change', function () {
-            window.location.href=
-                window.location.origin+
-                window.location.pathname+
-                '?'+reuse_query_string({'city':$(this).val()});
-        })
+// ----------------------------
+    $('.wishlist_close_admin').on('click', function (c) {
+        $(this).parent().parent().parent().fadeOut('slow', function (c) {});
+    });
 
+    var $owl = $('.owl-carousel');
+    var $owl_vid = $('.owl-carousel-vid');
 
+    $('.owl-carousel').owlCarousel({
+        loop:true,
+        margin:10,
+        nav:true,
+        autoplay:true,
+        autoplayTimeout:1000,
+        autoplayHoverPause:true,
+        navText:["<button class='btn-slid' type='button'>Previous</button>","<button class='btn-slid' type='button'>Next</button>"],
+        responsive:{
+            0:{
+                items:1
+            },
+            600:{
+                items:1
+            },
+            1000:{
+                items:1
+            }
+        }
+    });
 
-        // -------------------------
-        $('.wishlist_close_admin').on('click', function (c) {
-            $(this).parent().parent().parent().fadeOut('slow', function (c) {});
-        });
+    $(document).ready(function () {
 
-        var $owl = $('.owl-carousel');
-        var $owl_vid = $('.owl-carousel-vid');
-
-        $('.owl-carousel').owlCarousel({
+        $('.owl-one.owl-carousel').owlCarousel({
             loop:true,
             margin:10,
             nav:true,
@@ -248,87 +288,21 @@ $('input').iCheck({
                     items:1
                 },
                 600:{
-                    items:1
+                    items:4
                 },
                 1000:{
-                    items:1
+                    items:8
                 }
             }
+
         });
-
-        $(document).ready(function () {
-
-            $('.owl-one.owl-carousel').owlCarousel({
-                loop:true,
-                margin:10,
-                nav:true,
-                autoplay:true,
-                autoplayTimeout:1000,
-                autoplayHoverPause:true,
-                navText:["<button class='btn-slid' type='button'>Previous</button>","<button class='btn-slid' type='button'>Next</button>"],
-                responsive:{
-                    0:{
-                        items:1
-                    },
-                    600:{
-                        items:4
-                    },
-                    1000:{
-                        items:8
-                    }
-                }
-
-            });
-            $('.datetimepicker3').datetimepicker({
-                format: 'LT'
-            });
+        $('.datetimepicker3').datetimepicker({
+            format: 'LT'
         });
-        // $('.owl-one').owlCarousel({
-        //     loop:true,
-        //     margin:10,
-        //     // nav:true,
-        //     responsive:{
-        //         0:{
-        //             items:1
-        //         },
-        //         600:{
-        //             items:1
-        //         },
-        //         1000:{
-        //             items:1
-        //         }
-        //     }
-        // });
-
+    });
 
     </script>
 
-    <script type="text/javascript">
-
-
-        
-        // $("input").tagsinput('items');
-        // $('.owl-carousel-vid').owlCarousel({
-        //     loop:true,
-        //     margin:10,
-        //     nav:true,
-        //     navText:["<button class='btn-slid' type='button'>Previous</button>","<button class='btn-slid' type='button'>Next</button>"],
-        //     responsive:{
-        //         0:{
-        //             items:1
-        //         },
-        //         600:{
-        //             items:1
-        //         },
-        //         1000:{
-        //             items:1
-        //         }
-        //     }
-        // });
-
-
-        
-    </script>
    
     <script src="assets/js/leto.js"></script>
 
