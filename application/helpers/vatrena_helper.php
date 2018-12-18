@@ -1116,10 +1116,24 @@ function is_night_shift_th($id){
   $schedule = $CI->db->where('companies_id', $id)->get('companies')->row();
 
   if($schedule->starting_hour_night != '' OR $schedule->ending_hour_night != ''){
-      return  '<th>
-                P.M
-              </th>';
+      return  '<th> '.(is_arabic() ? 'فترة مسائية' : 'P.M').'</th>';
   }
+}
+
+function trans_am_pm($value)
+{
+    if( str_replace(' ', '', $value) == '12am' )
+      return is_arabic() ? '12 منتصف اليل' : '12 midnight';
+
+    if( str_replace(' ', '', $value) == '12pm' )
+      return is_arabic() ? '12 ظهراً' : '12 afternoon';
+
+    if( strrpos($value, 'am') && is_arabic() )
+      return str_ireplace('am', 'صباحاً', $value);
+    if( strrpos($value, 'pm') && is_arabic() )
+      return str_ireplace('pm', 'مساءاً', $value);
+
+    return $value;
 }
 
 function vatrenas_places($id){ 

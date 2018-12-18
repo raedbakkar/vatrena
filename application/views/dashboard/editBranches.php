@@ -374,7 +374,7 @@
 																		<label class="form-control-label">
 																			 latitude:
 																		</label>
-																		<input type="text" name="latitude" class="form-control m-input" placeholder="" value="">
+																		<input type="text" name="latitude" class="form-control m-input" placeholder="EX:3.54468468" value="<?=$companies->lat?>">
 																	</div>
 																</div>
 																<div class="form-group m-form__group row">
@@ -382,7 +382,7 @@
 																		<label class="form-control-label">
 																			 longitude:
 																		</label>
-																		<input type="text" name="longitude" class="form-control m-input" placeholder="" value="372955886840581">
+																		<input type="text" name="longitude" class="form-control m-input" placeholder="EX:3.54468468" value="<?=$companies->lng?>">
 																	</div>
 																</div>
 															</div>

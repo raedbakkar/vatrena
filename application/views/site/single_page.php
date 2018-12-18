@@ -109,10 +109,10 @@
 						<div id="Img_carousel" class="slider-pro Album_pic">
 							<div class="sp-slides">
 								<?php foreach($photos as $photo): ?>
-								<div class="sp-slide">
-									<img alt="Image" class="sp-image" src="assets/new_uploads/<?= $photo->photo ?>" data-src="assets/new_uploads/<?= $photo->photo ?>" data-small="assets/new_uploads/<?= $photo->photo ?>" data-medium="assets/new_uploads/<?= $photo->photo ?>" data-large="assets/new_uploads/<?= $photo->photo ?>" data-retina="assets/new_uploads/<?= $photo->photo ?>">
+								<div class="sp-slide center-block">
+									<img alt="Image" class="sp-image img-responsive" src="assets/new_uploads/<?= $photo->photo ?>" data-src="assets/new_uploads/<?= $photo->photo ?>" data-small="assets/new_uploads/<?= $photo->photo ?>" data-medium="assets/new_uploads/<?= $photo->photo ?>" data-large="assets/new_uploads/<?= $photo->photo ?>" data-retina="assets/new_uploads/<?= $photo->photo ?>">
 									<?php if($photo->desc_ar || $photo->desc_en): ?>
-									<p class="sp-layer sp-black sp-padding" data-horizontal="40" data-vertical="160" data-width="350" data-show-transition="left" data-show-delay="400">
+									<p class="sp-layer sp-black sp-padding" >
 										<?= (is_arabic() ? $photo->desc_ar : $photo->desc_en); ?>
 									</p>
 									<?php endif; ?>
@@ -160,7 +160,7 @@
 													Days
 												</th>
 												<th>
-													A.M
+													<?=is_arabic() ? 'فترة صباحية' : 'A.M' ?>
 												</th>
 												<?= is_night_shift_th($vatrena->companies_id) ?>
 											</tr>

@@ -258,7 +258,9 @@
 	            <!--TESTIMONIAL 1 -->
 	            <div class="item">
 	              <div class="shadow-effect">
-	                <img class="img-responsive" src="<?= (!empty($Categories->picutre) ? 'assets/new_uploads/'.$Categories->picutre:'assets/images/logo%20vatrena.png');  ?>" alt="">
+	              	<a href="<?= base_url() ?>finder/?guide_search_input=<?=(is_arabic() ? $Categories->keyword_title : $Categories->cat_keywords_en)?>">
+		                <img class="img-responsive" src="<?= (!empty($Categories->picutre) ? 'assets/new_uploads/'.$Categories->picutre:'assets/images/logo%20vatrena.png');  ?>" alt="">
+		            </a>
 	                <div class="item-details">
 						<a href="<?= base_url() ?>finder/?guide_search_input=<?=(is_arabic() ? $Categories->keyword_title : $Categories->cat_keywords_en)?>"> <?= (is_arabic() ? $Categories->keyword_title : $Categories->cat_keywords_en); ?></a>
 					</div>

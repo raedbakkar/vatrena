@@ -3,6 +3,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Dashboard extends CI_Controller {
 
+	public $default_priority;
+
+	public function __construct()
+	{
+		parent::__construct();
+		$this->default_priority=1000000;
+	}
 
 	public function index()
 	{
@@ -1940,8 +1947,9 @@ class Dashboard extends CI_Controller {
 							$this->db->insert('vatrena_keys_keyword', array(
 
 								'vatrena_id'=>$user_id,
-								'keyword_id'=>$keyword_id
-							
+								'keyword_id'=>$keyword_id,
+								'priority'=>$this->default_priority
+
 							));
 						}
 					}
@@ -1959,7 +1967,8 @@ class Dashboard extends CI_Controller {
 						$this->db->insert('vatrena_keys_keyword', array(
 
 							'vatrena_id'=>$user_id,
-							'keyword_id'=>$keyword_inserted_id
+							'keyword_id'=>$keyword_inserted_id,
+							'priority'=>$this->default_priority
 
 						));
 					}
@@ -1975,7 +1984,8 @@ class Dashboard extends CI_Controller {
 
 					$this->db->insert('vatrena_keys_category',array(
 						'vatrena_id'=>$user_id,
-						'category_id'=>$category
+						'category_id'=>$category,
+						'priority'=>$this->default_priority		
 					));
 	    		}
 	    		
@@ -2328,7 +2338,9 @@ class Dashboard extends CI_Controller {
 								$this->db->insert('vatrena_keys_keyword', array(
 
 									'vatrena_id'=>$user_id,
-									'keyword_id'=>$keyword_id
+									'keyword_id'=>$keyword_id,
+									'priority'=>$this->default_priority
+
 								
 								));
 							}
@@ -2346,7 +2358,9 @@ class Dashboard extends CI_Controller {
 							$this->db->insert('vatrena_keys_keyword', array(
 
 								'vatrena_id'=>$user_id,
-								'keyword_id'=>$keyword_inserted_id
+								'keyword_id'=>$keyword_inserted_id,
+								'priority'=>$this->default_priority
+
 
 							));
 						}
@@ -2360,7 +2374,9 @@ class Dashboard extends CI_Controller {
 
 						$this->db->insert('vatrena_keys_category',array(
 							'vatrena_id'=>$user_id,
-							'category_id'=>$category
+							'category_id'=>$category,
+							'priority'=>$this->default_priority
+
 						));
 		    		}
 		    		
@@ -3224,7 +3240,8 @@ class Dashboard extends CI_Controller {
 							$this->db->insert('vatrena_keys_keyword', array(
 
 								'vatrena_id'=>$user_id,
-								'keyword_id'=>$keyword_id
+								'keyword_id'=>$keyword_id,
+								'priority'=>$this->default_priority
 							
 							));
 						}
@@ -3243,7 +3260,8 @@ class Dashboard extends CI_Controller {
 						$this->db->insert('vatrena_keys_keyword', array(
 
 							'vatrena_id'=>$user_id,
-							'keyword_id'=>$keyword_inserted_id
+							'keyword_id'=>$keyword_inserted_id,
+							'priority'=>$this->default_priority
 
 						));
 					}
@@ -3253,17 +3271,33 @@ class Dashboard extends CI_Controller {
 			missing_keyword_checker($new_keyword_ids, $current_keyword_ids, $user_id);
 
 			// insert categories
-			if($this->db->where('vatrena_id', $user_id)->delete('vatrena_keys_category')){
-			
-	    		if($categories)foreach($categories as $category){
+		
+    		if($categories){
+				$arr_all_vat_cat=array();
+				$all_vat_cat = $this->db->select('GROUP_CONCAT(category_id) as ids')->where('vatrena_id', $user_id)->get('vatrena_keys_category')->result();
+				if( isset($all_vat_cat[0]) && $all_vat_cat[0]->ids )
+					$arr_all_vat_cat=explode(',', $all_vat_cat[0]->ids);
 
-					$this->db->insert('vatrena_keys_category',array(
-						'vatrena_id'=>$user_id,
-						'category_id'=>$category
-    				));
+    			foreach($categories as $category){
+					if (($key = array_search($category, $arr_all_vat_cat)) === false) {
+						$this->db->insert('vatrena_keys_category',array(
+							'vatrena_id'=>$user_id,
+							'category_id'=>$category,
+							'priority'=>$this->default_priority
+	    				));
+					}else{
+					    unset($arr_all_vat_cat[$key]);
+					}
 	    		}
+
+	    		if($arr_all_vat_cat)
+					$this->db->where('vatrena_id', $user_id)->where_in('category_id', $arr_all_vat_cat)->delete('vatrena_keys_category');
+
+    		} else {
+				$this->db->where('vatrena_id', $user_id)->delete('vatrena_keys_category');
+    		}
 	    		
-	    	}
+	    	
     		$field_tele =  implode(',', $arr_tele);
 
 
@@ -3907,8 +3941,9 @@ class Dashboard extends CI_Controller {
 
 	public function get_vatrena_priority()
 	{
+		$category=$this->input->post('category');
 		$SelectXor=$this->input->post('SelectXor');
-		$vatrena_priority=$this->db->where('vatrena_id', $SelectXor)->get('vatrena_keys_category')->row('priority');
+		$vatrena_priority=$this->db->where('vatrena_id', $SelectXor)->where('category_id', $category)->get('vatrena_keys_category')->row('priority');
 
 		$priority='<div class="form-group m-form__group">
 						<label for="message-text" class="form-control-label">
@@ -3923,8 +3958,9 @@ class Dashboard extends CI_Controller {
 
 	public function get_vatrena_keyword_priority()
 	{
+		$keyword=$this->input->post('keyword');
 		$SelectXor=$this->input->post('SelectXor');
-		$vatrena_priority=$this->db->where('vatrena_id', $SelectXor)->get('vatrena_keys_keyword')->row('priority');
+		$vatrena_priority=$this->db->where('vatrena_id', $SelectXor)->where('keyword_id', $keyword)->get('vatrena_keys_keyword')->row('priority');
 
 		$priority='<div class="form-group m-form__group">
 						<label for="message-text" class="form-control-label">
@@ -3938,13 +3974,7 @@ class Dashboard extends CI_Controller {
 
 	public function active_vatrena_comp(){
     	$comp_id = $this->input->post('comp_id');
-    	$is_active  = $this->input->post('is_active');
-
-    	if($is_active == 1){
-    		$is_active = 0;
-    	}else if($is_active == 0){
-    		$is_active = 1;
-    	}
+    	$is_active = $this->input->post('is_active');
 
     	if($this->db->where('companies_id', $comp_id)->update('companies', array('active'=>$is_active))){
     		echo json_encode(array('done'=>'vatrena has been activated'));

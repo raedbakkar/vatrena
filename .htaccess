@@ -1,4 +1,5 @@
 RewriteEngine on
 RewriteBase / 
-RewriteCond $1 !^(index\.php|dashboard|sounds|source|assets)
+RewriteCond $1 !^(index\.php|sounds|source|assets)
 RewriteRule ^(.*)$ /leto/vatrena/index.php?/$1 [L]
+#dashboard|

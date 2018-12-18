@@ -3,7 +3,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Home extends CI_Controller {
 
-
 	public function index(){
 		$data['category'] = $this->db->where('featured_item', 1)->where('is_category', 1)->get('cat_keywords')->result();
 		$data['area'] = $this->db->get('governorate')->result();
@@ -687,9 +686,9 @@ class Home extends CI_Controller {
 							'.$day.'
 						</td>
 						<td>
-							'.(in_array(strtolower($day), $holidays_array)  ? '<span class="label label-danger">Closed</span>':$schedule->starting_hour.' - '.$schedule->ending_hour).'
+							'.(in_array(strtolower($day), $holidays_array)  ? '<span class="label label-danger">Closed</span>':trans_am_pm($schedule->starting_hour).' - '.trans_am_pm($schedule->ending_hour)).'
 						</td>
-							'.is_night_shift($day, $holidays_array, $schedule->holidays, $schedule->starting_hour_night, $schedule->ending_hour_night).'
+							'.is_night_shift($day, $holidays_array, $schedule->holidays, trans_am_pm($schedule->starting_hour_night), trans_am_pm($schedule->ending_hour_night)).'
 					</tr>';
 			}
 			return $trs;

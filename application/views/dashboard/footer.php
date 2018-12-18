@@ -656,7 +656,7 @@
 		<script src="assets/dashboard/wizard.js" type="text/javascript"></script>
 		<script src="assets/dashboard/form-repeater.js" type="text/javascript"></script>
 		<script src="assets/dashboard/select2.js" type="text/javascript"></script>
-		<script type="text/javascript">var base_url = '<?= base_url() ?>dashboard/itmes_vatrena/';</script>
+		<script type="text/javascript">var base_url = '<?= base_url() ?>dashboard/itmes_vatrena/', segment_id='<?=$this->uri->segment(3, 0)?>';</script>
 		<script src="assets/dashboard/mls.search.min.js" type="text/javascript"></script>
 		<script src="assets/dashboard/html-table.js" type="text/javascript"></script>
 		<script src="assets/dashboard/sweetalert2.js" type="text/javascript"></script>

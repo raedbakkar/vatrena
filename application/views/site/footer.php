@@ -98,20 +98,33 @@ $('input').iCheck({
  <script src="assets/js/jquery.sliderPro.min.js"></script>
  <script type="text/javascript">
     $(document).ready(function ($) {
-        $('#Img_carousel').sliderPro({
-            width: 960,
-            height: 500,
+
+        // $('#Img_carousel').sliderPro({
+        //     // width: 960,
+        //     // height: 500,
+        //     fade: true,
+        //     arrows: true,
+        //     buttons: false,
+        //     fullScreen: false,
+        //     // smallSize: 500,
+        //     startSlide: 0,
+        //     // mediumSize: 1000,
+        //     // largeSize: 3000,
+        //     thumbnailArrows: true,
+        //     autoplay: true
+        // });
+
+        $( '#Img_carousel' ).sliderPro({
+            width: '100%',
             fade: true,
+            height: 500,
+            loop: false,
             arrows: true,
             buttons: false,
-            fullScreen: false,
-            smallSize: 500,
-            startSlide: 0,
-            mediumSize: 1000,
-            largeSize: 3000,
             thumbnailArrows: true,
             autoplay: true
         });
+
 
         $('#video_carousel').sliderPro({
             width: 960,
@@ -151,10 +164,10 @@ $('input').iCheck({
     <script src="assets/validate.js"></script>
 
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tagsinput/0.8.0/bootstrap-tagsinput.min.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tagsinput/0.8.0/bootstrap-tagsinput.min.js.map"></script>
+    <!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tagsinput/0.8.0/bootstrap-tagsinput.min.js.map"></script> -->
     <script type="text/javascript" src="https://twitter.github.io/typeahead.js/releases/latest/typeahead.bundle.js"></script>
     <!-- Map -->
-    <script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyDwNBXmHBDQ29JWsRH8gwNVkf7mM0-flaI"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDwNBXmHBDQ29JWsRH8gwNVkf7mM0-flaI"></script>
                                    
     <script type="text/javascript">var base_url = '<?= base_url() ?>';</script>                             
     <script src="assets/js/map.js"></script>
@@ -170,6 +183,10 @@ $('input').iCheck({
     </script>
     <script>
 //     raed code
+    // $('#Img_carousel').owlCarousel({
+
+    // });
+
     $('#list-categories-home').owlCarousel({
         rtl: true,
         loop:true,
