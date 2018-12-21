@@ -3,6 +3,16 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Home extends CI_Controller {
 
+	public function __construct()
+	{
+		parent::__construct();
+	 	if(is_arabic()){
+	 		$this->lang->load('ar','arabic');
+	 	}else{
+	 		$this->lang->load('en','english');
+	 	}
+	}
+
 	public function index(){
 		$data['category'] = $this->db->where('featured_item', 1)->where('is_category', 1)->get('cat_keywords')->result();
 		$data['area'] = $this->db->get('governorate')->result();
@@ -18,6 +28,8 @@ class Home extends CI_Controller {
 
 		$data['area'] = $this->db->get('governorate')->result();
 		$data['categories'] = $this->db->where('is_category', 1)->get('cat_keywords')->result();
+		$data['keywords'] = $this->db->where('is_category', 0)->get('cat_keywords')->result();
+
 		// $data['moha'] = $this->db->get('mohafazat')->result();
 		// $data['city'] = $this->db->get('city')->result();
 		// $data['dist'] = $this->db->get('district')->result();
@@ -39,7 +51,10 @@ class Home extends CI_Controller {
    			array_push($all_album_ids, $all_album->photo_cat_id);
    		}
 
-   		$count_photos=$this->db->where_in('photo_category', $all_album_ids)->count_all_results('photo');
+   		if($all_album_ids)
+	   		$count_photos=$this->db->where_in('photo_category', $all_album_ids)->count_all_results('photo');
+	   	else
+	   		$count_photos=0;
 
    		$photo_price=$this->db->where('per_id', 2)->get('permissions')->row('vat_coin');
 
@@ -1414,12 +1429,7 @@ class Home extends CI_Controller {
 	    $arabicAddress = $this->input->post('arabicAddress');
 	    $englishDescription = $this->input->post('englishDescription');
 	    $arabicDescription = $this->input->post('arabicDescription');
-	    $logo = $this->input->post('logo');
-	    
-
-	   
 	    $mobile = $this->input->post('mobile');
-
 	    $code = $this->input->post('code');
 	    $telephone = $this->input->post('telephone');
 
@@ -1441,6 +1451,25 @@ class Home extends CI_Controller {
 	    $this->form_validation->set_rules('mobile', 'mobile', 'required');
 	    $this->form_validation->set_rules('code', 'code', 'required');
 	    $this->form_validation->set_rules('telephone', 'telephone', 'required');
+
+
+        $config['upload_path']          = './assets/uploads/';
+        $config['allowed_types']        = 'gif|jpg|png';
+        $config['encrypt_name']         = TRUE;
+        // $config['max_size']             = 100;
+        // $config['max_width']            = 1024;
+        // $config['max_height']           = 768;
+        $this->load->library('upload', $config);
+
+        if ( ! $this->upload->do_upload('logo'))
+        {
+     		die( json_encode(array('error'=> $this->upload->display_errors())) );
+        }
+        else
+        {
+            $data = array('upload_data' => $this->upload->data());
+            $logo=$data['upload_data']['file_name'];
+        }
 
 	    $mobile = implode('-', $mobile);
 

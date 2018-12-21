@@ -94,11 +94,31 @@ $('input').iCheck({
  <script src="assets/js/bootstrap-timepicker.js"></script>
  <script src="assets/js/bootstrap-datepicker.js"></script>
  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js"></script>
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/js/i18n/en.js"></script>
 
  <script src="assets/js/jquery.sliderPro.min.js"></script>
  <script type="text/javascript">
     $(document).ready(function ($) {
 
+        $('.select2').select2();
+
+        $('[name=categories]').on('change', function () {
+            var val=$(this).val();
+            if(val=='other_category'){
+                $('[name=other_category]').removeClass('hidden');
+            }else{
+                $('[name=other_category]').addClass('hidden');
+            }
+        })
+
+        $('[name=keywords]').on('change', function () {
+            var val=$(this).val();
+            if(val=='other_tag'){
+                $('[name=other_tag]').removeClass('hidden');
+            }else{
+                $('[name=other_tag]').addClass('hidden');
+            }
+        })
         // $('#Img_carousel').sliderPro({
         //     // width: 960,
         //     // height: 500,

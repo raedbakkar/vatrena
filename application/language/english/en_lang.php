@@ -1,6 +1,4 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
-
 $lang['xp_Home'] = 'الصفحة الرئيسية';
 $lang['v_city'] = 'City';
 $lang['v_district'] = 'District';
@@ -14,3 +12,30 @@ $lang['v_home'] = 'Home';
 $lang['v_Stores'] = 'Stores';
 $lang['v_Register'] = 'Register';
 $lang['v_Sign_in'] = 'Sign in';
+$lang['company_name_ar'] = 'Company arabic name';
+$lang['company_name_en'] = 'Company english name';
+$lang['categories'] = 'Categories';
+$lang['keywords'] = 'Keywords';
+$lang['area'] = 'Area';
+$lang['city'] = 'City';
+$lang['district'] = 'District';
+$lang['governorate'] = 'Governorate';
+$lang['address_ar'] = 'Address arabic';
+$lang['address_en'] = 'Address english';
+$lang['description'] = 'Description';
+$lang['description'] = 'Description';
+$lang['description_ar'] = 'Describation arabic';
+$lang['description_en'] = 'Describation english';
+$lang['username'] = 'Username';
+$lang['email'] = 'E-mail';
+$lang['password'] = 'Password';
+$lang['confirm_password'] = 'Confirm Password';
+$lang['company_details'] = 'Company Details';
+$lang['choose_tag'] = 'Choose tag';
+$lang['choose_catrgory'] = 'Choose category';
+$lang['choose_area'] = 'Choose area';
+$lang['logo'] = 'Logo';
+$lang['contact_information'] = 'Contact information';
+$lang['telephone'] = 'Telephone';
+$lang['mobile'] = 'Mobile';
+$lang['create_an_account'] = 'Create an account';
